@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Cloud Schlüsselbegriffe</title>
+    <style>
+        /* Original styles remain the same */
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f4f8;
+        }
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background-color: #1e3a8a;
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .terms-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .term-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .term-card:hover {
+            transform: translateY(-5px);
+        }
+        .term-title {
+            color: #1e3a8a;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .category-label {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: #dbeafe;
+            color: #1e3a8a;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-bottom: 10px;
+        }
+
+        /* New popup styles */
+        .popup {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 300px;
+            z-index: 1000;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .popup-close {
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+        }
+        
+        .filezilla-logo {
+            font-weight: bold;
+            color: #BF0000;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .sponsor-tag {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Original content remains the same -->
+    <div class="header">
+        <h1>Public Cloud Computing</h1>
+        <p>Grundlegende Begriffe und Konzepte</p>
+    </div>
+    
+    <div class="terms-container">
+        <!-- Original term cards remain the same -->
+        <div class="term-card">
+            <span class="category-label">Infrastruktur</span>
+            <div class="term-title">IaaS (Infrastruktur als Service)</div>
+            <p>Cloud-basierte Dienste, die virtualisierte Computerressourcen über das Internet bereitstellen. Umfasst virtuelle Maschinen, Speicher und Netzwerke.</p>
+        </div>
+
+        <!-- [Previous cards remain the same...] -->
+    </div>
+
+    <!-- New popup element -->
+    <div id="fileZillaPopup" class="popup">
+        <div class="popup-header">
+            <div class="filezilla-logo">FileZilla</div>
+            <span class="popup-close" onclick="closePopup()">×</span>
+        </div>
+        <p><strong>Warum lädt der Cloud-Upload so lange?</strong></p>
+        <p>Weil die Wolken heute einen Stau haben! 😄</p>
+        <p class="sponsor-tag">Gesponsert von FileZilla - Ihr zuverlässiger FTP-Client</p>
+    </div>
+
+    <script>
+        // Show popup after 3 seconds
+        setTimeout(() => {
+            document.getElementById('fileZillaPopup').style.display = 'block';
+        }, 3000);
+
+        function closePopup() {
+            document.getElementById('fileZillaPopup').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
