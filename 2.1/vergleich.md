@@ -10,7 +10,7 @@ Vergleich der relevanten Kriterien für Microsoft Azure vs Amazon Web Services (
 | **Kundensupport**  | Umfassender Support inklusive Schulung, Beratung und technischer Unterstützung. | Umfassender Support inklusive Schulung, Beratung und technischer Unterstützung. |
 
 ![Cloud Computing vergleich](image.png)
-Quelle: [NIST Definition](https://www.datacamp.com/blog/aws-vs-azure)
+Quelle: [datacamp](https://www.datacamp.com/blog/aws-vs-azure)
 Beide Plattformen bieten ähnliche Dienstleistungen und haben ihre eigenen Stärken und Schwächen. Die Wahl zwischen Azure und AWS hängt oft von den spezifischen need Ihrer Organisation ab.
 
 ### **Kostenstruktur**
