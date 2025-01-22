@@ -1,4 +1,18 @@
-# Kubectl Command Glossary
+# Extended Kubectl Command Glossary and Troubleshooting Guide
+
+## Table of Contents
+1. [Cluster Management Commands](#cluster-management-commands)
+2. [Resource Management Commands](#resource-management-commands)
+3. [Namespace Operations](#namespace-operations)
+4. [Pod Operations](#pod-operations)
+5. [Service Operations](#service-operations)
+6. [Deployment Operations](#deployment-operations)
+7. [ConfigMap and Secret Operations](#configmap-and-secret-operations)
+8. [Advanced Commands](#advanced-commands)
+9. [Common Options](#common-options)
+10. [Plugin Commands](#plugin-commands)
+11. [Extended Commands](#extended-commands)
+12. [Troubleshooting Guide](#troubleshooting-guide)
 
 ## Cluster Management Commands
 
@@ -6,12 +20,17 @@
 - `kubectl cluster-info` - Display cluster information including the master and service endpoints
 - `kubectl version` - Show the Kubernetes version running on both client and server
 - `kubectl api-resources` - List all supported API resources on the server
+- `kubectl api-versions` - Print available API versions
+- `kubectl get componentstatuses` - View the health of cluster components
 
 ### Context and Configuration
 - `kubectl config view` - Show merged kubeconfig settings
 - `kubectl config get-contexts` - List all available contexts
 - `kubectl config use-context [context-name]` - Switch to another context
 - `kubectl config set-context [context-name]` - Set a context entry in kubeconfig
+- `kubectl config set-credentials [user-name]` - Set a user entry in kubeconfig
+- `kubectl config set-cluster [cluster-name]` - Set a cluster entry in kubeconfig
+- `kubectl config unset [property-name]` - Unset an individual value in kubeconfig
 
 ## Resource Management Commands
 
@@ -19,12 +38,18 @@
 - `kubectl create [resource]` - Create a resource from a file or stdin
 - `kubectl apply -f [filename]` - Apply a configuration to a resource by file name or stdin
 - `kubectl run [name] --image=[image-name]` - Create and run a particular image in a pod
+- `kubectl create job [name] --image=[image-name]` - Create a job with the specified name
+- `kubectl create cronjob [name] --image=[image-name] --schedule='*/1 * * * *'` - Create a cronjob
+- `kubectl create quota [name]` - Create a quota with the specified name
 
 ### Viewing Resources
 - `kubectl get [resource]` - List one or more resources
 - `kubectl describe [resource] [name]` - Show detailed information about a resource
 - `kubectl logs [pod-name]` - Print the logs for a container in a pod
 - `kubectl exec [pod-name] -- [command]` - Execute a command in a container
+- `kubectl get events --sort-by=.metadata.creationTimestamp` - Get sorted events
+- `kubectl get pods --field-selector status.phase=Running` - Get running pods
+- `kubectl get pods --show-labels` - Show pods with their labels
 
 ### Modifying Resources
 - `kubectl edit [resource] [name]` - Edit a resource on the server
@@ -32,73 +57,196 @@
 - `kubectl rollout [subcommand]` - Manage rollouts of a resource
 - `kubectl label [resource] [name] [label]` - Add or update labels
 - `kubectl annotate [resource] [name] [annotation]` - Add or update annotations
+- `kubectl set image deployment/[name] [container]=[image]` - Update image of a deployment
+- `kubectl set resources deployment/[name] -c=[container] --limits=cpu=200m,memory=512Mi` - Set resource limits
 
-### Deleting Resources
-- `kubectl delete [resource] [name]` - Delete resources by file names, stdin, resources and names, or by resources and label selector
-- `kubectl delete -f [filename]` - Delete resources using file names
-- `kubectl delete [resource] --all` - Delete all resources of a specific type
+## Extended Commands
 
-## Namespace Operations
-- `kubectl create namespace [name]` - Create a new namespace
-- `kubectl get namespaces` - List all namespaces
-- `kubectl config set-context --current --namespace=[namespace]` - Set the default namespace
+### Node Management
+- `kubectl drain [node-name]` - Drain node in preparation for maintenance
+- `kubectl uncordon [node-name]` - Mark node as schedulable
+- `kubectl cordon [node-name]` - Mark node as unschedulable
+- `kubectl taint nodes [node-name] [key=value:effect]` - Add a taint to a node
 
-## Pod Operations
-- `kubectl get pods` - List all pods in the current namespace
-- `kubectl get pods --all-namespaces` - List all pods in all namespaces
-- `kubectl port-forward [pod-name] [local-port]:[pod-port]` - Forward one or more local ports to a pod
-- `kubectl attach [pod-name] -c [container-name]` - Attach to a running container
+### Certificate Management
+- `kubectl certificate approve [name]` - Approve a certificate signing request
+- `kubectl certificate deny [name]` - Deny a certificate signing request
+- `kubectl get csr` - List certificate signing requests
 
-## Service Operations
-- `kubectl expose [resource] [name] --port=[port] --target-port=[target-port]` - Expose a resource as a new Kubernetes service
-- `kubectl get services` - List all services
-- `kubectl describe service [name]` - Show details of a specific service
+### RBAC Commands
+- `kubectl create role [name] --verb=get --resource=pods` - Create a role
+- `kubectl create rolebinding [name] --role=[role-name] --user=[user-name]` - Create a role binding
+- `kubectl auth can-i [verb] [resource]` - Check if an action is allowed
+- `kubectl create clusterrole [name]` - Create a cluster role
+- `kubectl create clusterrolebinding [name]` - Create a cluster role binding
 
-## Deployment Operations
-- `kubectl create deployment [name] --image=[image-name]` - Create a deployment
-- `kubectl get deployments` - List all deployments
-- `kubectl rollout status deployment/[name]` - Check deployment rollout status
-- `kubectl rollout history deployment/[name]` - View deployment rollout history
-- `kubectl rollout undo deployment/[name]` - Rollback to previous deployment
+### Advanced Deployment Strategies
+- `kubectl rollout pause deployment/[name]` - Pause a deployment
+- `kubectl rollout resume deployment/[name]` - Resume a deployment
+- `kubectl rollout restart deployment/[name]` - Restart a deployment
+- `kubectl set env deployment/[name] [env-var]=[value]` - Set environment variables
 
-## ConfigMap and Secret Operations
-- `kubectl create configmap [name] --from-file=[path]` - Create a configmap from a file or directory
-- `kubectl create secret generic [name] --from-file=[path]` - Create a secret from a file or directory
-- `kubectl get configmaps` - List all configmaps
-- `kubectl get secrets` - List all secrets
+## Troubleshooting Guide
 
-## Advanced Commands
+### Common Error Types and Solutions
 
-### Debug Commands
-- `kubectl debug [pod-name] -it --image=[debug-image]` - Create debugging container
-- `kubectl top [resource-type]` - Show resource usage (CPU/Memory)
-- `kubectl events` - View events in the cluster
+#### ImagePullBackOff Error
+```bash
+# Check pod events
+kubectl describe pod [pod-name]
 
-### Networking Commands
-- `kubectl proxy` - Start a proxy to the Kubernetes API server
-- `kubectl port-forward` - Forward ports of a pod to your local machine
+# Check pod logs
+kubectl logs [pod-name]
 
-### Advanced Resource Management
-- `kubectl diff -f [filename]` - View the difference between the current state and the file
-- `kubectl patch [resource] [name] -p [patch]` - Update field(s) of a resource
-- `kubectl replace -f [filename]` - Replace a resource by filename or stdin
+# Verify image name and registry credentials
+kubectl get secret [registry-secret] --namespace=[namespace]
 
-## Common Options
-These options can be used with most kubectl commands:
-- `--namespace, -n` - Specify the namespace
-- `-o wide` - Output in plain-text format with additional information
-- `-o yaml` - Output in YAML format
-- `-o json` - Output in JSON format
-- `--all-namespaces, -A` - List resources across all namespaces
-- `--selector, -l` - Filter resources by label selector
-- `--field-selector` - Filter resources by field selector
+# Solutions:
+1. Verify image name and tag
+2. Check registry credentials
+3. Verify network connectivity to registry
+4. Check registry secret configuration
+```
 
-## Plugin Commands
-- `kubectl plugin list` - List all available kubectl plugins
-- `kubectl krew` - Package manager for kubectl plugins (if installed)
+#### CrashLoopBackOff Error
+```bash
+# Get detailed pod information
+kubectl describe pod [pod-name]
+
+# Check container logs
+kubectl logs [pod-name] --previous
+
+# Solutions:
+1. Check application logs for errors
+2. Verify resource limits
+3. Check container command and args
+4. Validate configuration files
+```
+
+#### Pod Pending Status
+```bash
+# Check node resources
+kubectl describe nodes
+
+# Check pod events
+kubectl get events --sort-by=.metadata.creationTimestamp
+
+# Solutions:
+1. Verify node resources availability
+2. Check node selector configuration
+3. Verify PVC status if using persistent storage
+4. Check for node taints and pod tolerations
+```
+
+#### Service Connection Issues
+```bash
+# Check service details
+kubectl describe service [service-name]
+
+# Verify endpoints
+kubectl get endpoints [service-name]
+
+# Test service DNS
+kubectl run -it --rm debug --image=busybox --restart=Never -- nslookup [service-name]
+
+# Solutions:
+1. Verify service selector matches pod labels
+2. Check pod ready status
+3. Verify network policies
+4. Check service port configuration
+```
+
+#### Permission Denied Errors
+```bash
+# Check user permissions
+kubectl auth can-i [verb] [resource]
+
+# View role bindings
+kubectl get rolebindings,clusterrolebindings
+
+# Solutions:
+1. Verify RBAC configuration
+2. Check service account permissions
+3. Update role bindings if needed
+4. Validate certificate configuration
+```
+
+### Debug Commands and Techniques
+
+#### Network Debugging
+```bash
+# Test network connectivity
+kubectl run -it --rm debug --image=nicolaka/netshoot --restart=Never -- bash
+
+# Check DNS resolution
+kubectl exec -it [pod-name] -- nslookup kubernetes.default
+
+# Verify network policies
+kubectl get networkpolicies --all-namespaces
+
+# Port-forward for local testing
+kubectl port-forward [pod-name] [local-port]:[pod-port]
+```
+
+#### Resource Usage Analysis
+```bash
+# Check node resource usage
+kubectl top nodes
+
+# Monitor pod resource usage
+kubectl top pods --containers
+
+# Get detailed resource metrics
+kubectl describe node [node-name] | grep -A 5 "Allocated resources"
+```
+
+#### Log Analysis
+```bash
+# Get logs with timestamps
+kubectl logs [pod-name] --timestamps
+
+# Follow logs in real-time
+kubectl logs -f [pod-name]
+
+# Get logs from previous container instance
+kubectl logs [pod-name] --previous
+
+# Get logs from specific container in pod
+kubectl logs [pod-name] -c [container-name]
+```
+
+### Best Practices for Troubleshooting
+
+1. **Systematic Approach**
+   - Start with pod status and events
+   - Check container logs
+   - Verify configuration
+   - Examine network connectivity
+   - Review resource utilization
+
+2. **Documentation**
+   - Maintain troubleshooting runbooks
+   - Document common issues and solutions
+   - Keep track of cluster-specific quirks
+   - Record configuration changes
+
+3. **Monitoring and Alerting**
+   - Set up proper monitoring
+   - Configure relevant alerts
+   - Keep track of resource usage trends
+   - Monitor cluster health metrics
+
+4. **Regular Maintenance**
+   - Keep kubectl and cluster versions in sync
+   - Regularly update container images
+   - Clean up unused resources
+   - Perform regular security audits
 
 ## Notes:
 1. Square brackets [] indicate variable values that need to be replaced
 2. Many commands accept additional flags and options not listed here
 3. Use `kubectl [command] --help` for more detailed information about specific commands
 4. Some commands may require specific permissions or roles in the cluster
+5. Always backup critical resources before making changes
+6. Test commands in non-production environment first
+7. Use `--dry-run=client -o yaml` to preview changes
