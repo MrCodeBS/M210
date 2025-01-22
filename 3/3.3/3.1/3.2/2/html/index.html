@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Public Cloud Schlüsselbegriffe</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>Public Cloud Computing</h1>
+      <p>Grundlegende Begriffe und Konzepte</p>
+    </div>
+
+    <div class="terms-container">
+      <div class="term-card">
+        <span class="category-label">Infrastruktur</span>
+        <div class="term-title">IaaS (Infrastruktur als Service)</div>
+        <p>
+          Cloud-basierte Dienste, die virtualisierte Computerressourcen über das
+          Internet bereitstellen. Umfasst virtuelle Maschinen, Speicher und
+          Netzwerke.
+        </p>
+      </div>
+
+      <div class="term-card">
+        <span class="category-label">Plattform</span>
+        <div class="term-title">PaaS (Plattform als Service)</div>
+        <p>
+          Entwicklungs- und Bereitstellungsumgebung in der Cloud, die
+          Plattformen für die Entwicklung, das Testen und die Verwaltung von
+          Anwendungen bereitstellt.
+        </p>
+      </div>
+
+      <div class="term-card">
+        <span class="category-label">Software</span>
+        <div class="term-title">SaaS (Software als Service)</div>
+        <p>
+          Cloud-basierte Anwendungen, die über das Internet bereitgestellt
+          werden, typischerweise im Abonnement. Beispiele sind E-Mail-Dienste
+          und Büro-Anwendungen.
+        </p>
+      </div>
+
+      <div class="term-card">
+        <span class="category-label">Speicher</span>
+        <div class="term-title">Cloud-Speicher</div>
+        <p>
+          Bedarfsgerechte Speicherdienste, die über das Internet zugänglich sind
+          und skalierbare Kapazität ohne Verwaltung physischer Hardware bieten.
+        </p>
+      </div>
+
+      <div class="term-card">
+        <span class="category-label">Sicherheit</span>
+        <div class="term-title">Cloud-Sicherheit</div>
+        <p>
+          Richtlinien, Technologien und Kontrollen zum Schutz cloudbasierter
+          Systeme, Daten und Infrastruktur vor Bedrohungen.
+        </p>
+      </div>
+
+      <div class="term-card">
+        <span class="category-label">Bereitstellung</span>
+        <div class="term-title">Cloud-Migration</div>
+        <p>
+          Prozess der Verlagerung von Anwendungen, Daten und anderen
+          Geschäftselementen von lokaler Infrastruktur in
+          Cloud-Computing-Umgebungen.
+        </p>
+      </div>
+
+      <div class="term-card">
+        <span class="category-label">Verwaltung</span>
+        <div class="term-title">Automatische Skalierung</div>
+        <p>
+          Automatische Anpassung der Rechenressourcen basierend auf
+          Arbeitslasten, um optimale Leistung und Kosteneffizienz zu
+          gewährleisten.
+        </p>
+      </div>
+
+      <div class="term-card">
+        <span class="category-label">Architektur</span>
+        <div class="term-title">Microservices</div>
+        <p>
+          Architekturstil, der Anwendungen als Sammlungen lose gekoppelter
+          Dienste strukturiert und sie dadurch leichter skalierbar und wartbar
+          macht.
+        </p>
+      </div>
+
+      <div class="term-card">
+        <span class="category-label">Netzwerk</span>
+        <div class="term-title">CDN (Content Delivery Network)</div>
+        <p>
+          Verteiltes Netzwerk von Servern, das Inhalte basierend auf dem
+          geografischen Standort der Benutzer bereitstellt und dabei
+          Geschwindigkeit und Zuverlässigkeit verbessert.
+        </p>
+      </div>
+    </div>
+    <!-- New popup element -->
+    <div id="fileZillaPopup" class="popup">
+      <div class="popup-header">
+        <div class="filezilla-logo">FileZilla</div>
+        <span class="popup-close" onclick="closePopup()">×</span>
+      </div>
+      <p><strong>Warum lädt der Cloud-Upload so lange?</strong></p>
+      <p>Weil die Wolken heute einen Stau haben! 😄</p>
+      <p class="sponsor-tag">
+        Gesponsert von FileZilla - Ihr zuverlässiger FTP-Client
+      </p>
+    </div>
+
+    <script>
+      // Show popup after 3 seconds
+      setTimeout(() => {
+        document.getElementById("fileZillaPopup").style.display = "block";
+      }, 3000);
+
+      function closePopup() {
+        document.getElementById("fileZillaPopup").style.display = "none";
+      }
+    </script>
+  </body>
+</html>

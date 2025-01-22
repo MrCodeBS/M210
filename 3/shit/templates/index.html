@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockView Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --primary: #3b82f6;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.5rem;
+            padding: 0.5rem;
+        }
+
+        .search-container {
+            background-color: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .symbol-hints {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        #errorMessage {
+            color: #ef4444;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+            .grid {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        .company-info {
+            background-color: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .company-info h2 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .info-item {
+            margin-bottom: 1rem;
+        }
+
+        .info-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-weight: 500;
+        }
+
+        .chart-container {
+            background-color: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            min-height: 400px;
+        }
+
+        .loading {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        .loading-spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>StockView Pro</h1>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="symbolInput" placeholder="Enter stock symbol (e.g., AAPL, GOOGL, META)" />
+                <button onclick="fetchData()">
+                    <i class="fas fa-search"></i>
+                    Get Data
+                </button>
+            </div>
+            <div class="symbol-hints">
+                Popular symbols: AAPL (Apple), GOOGL (Google), META (Meta), MSFT (Microsoft), AMZN (Amazon)
+            </div>
+            <div id="errorMessage"></div>
+        </div>
+
+        <div class="loading" id="loadingIndicator">
+            <div class="loading-spinner"></div>
+        </div>
+
+        <div class="grid">
+            <div class="company-info" id="companyInfo"></div>
+            <div class="chart-container">
+                <canvas id="stockChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let stockChart;
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            updateChartTheme();
+        }
+
+        function updateChartTheme() {
+            if (stockChart) {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                stockChart.options.scales.x.grid.color = isDark ? '#334155' : '#e2e8f0';
+                stockChart.options.scales.y.grid.color = isDark ? '#334155' : '#e2e8f0';
+                stockChart.options.scales.x.ticks.color = isDark ? '#94a3b8' : '#64748b';
+                stockChart.options.scales.y.ticks.color = isDark ? '#94a3b8' : '#64748b';
+                stockChart.update();
+            }
+        }
+
+        async function fetchData() {
+            const symbol = document.getElementById('symbolInput').value || 'IBM';
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            loadingIndicator.style.display = 'flex';
+            errorMessage.textContent = '';
+            
+            try {
+                const [stockResponse, infoResponse] = await Promise.all([
+                    fetch(`/stock_data?symbol=${symbol}`),
+                    fetch(`/company_info?symbol=${symbol}`)
+                ]);
+                
+                const stockData = await stockResponse.json();
+                const companyData = await infoResponse.json();
+                
+                if (stockResponse.ok) {
+                    updateChart(stockData);
+                } else {
+                    errorMessage.textContent = 'Error: ' + stockData.error;
+                    if (stockChart) {
+                        stockChart.destroy();
+                        stockChart = null;
+                    }
+                }
+                
+                if (infoResponse.ok) {
+                    updateCompanyInfo(companyData);
+                }
+                
+            } catch (error) {
+                errorMessage.textContent = 'Failed to fetch data. Please try again.';
+                console.error('Error:', error);
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        }
+
+        function updateChart(data) {
+            const dates = data.map(item => item.date);
+            const prices = data.map(item => parseFloat(item.close));
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            
+            if (stockChart) {
+                stockChart.destroy();
+            }
+            
+            const ctx = document.getElementById('stockChart').getContext('2d');
+            stockChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Closing Price',
+                        data: prices,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: isDark ? '#1e293b' : 'white',
+                            titleColor: isDark ? '#f1f5f9' : '#1e293b',
+                            bodyColor: isDark ? '#f1f5f9' : '#1e293b',
+                            borderColor: isDark ? '#334155' : '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: isDark ? '#334155' : '#e2e8f0',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: isDark ? '#94a3b8' : '#64748b',
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: isDark ? '#334155' : '#e2e8f0',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: isDark ? '#94a3b8' : '#64748b',
+                                callback: function(value) {
+                                    return '$' + value.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCompanyInfo(data) {
+            const infoDiv = document.getElementById('companyInfo');
+            infoDiv.innerHTML = `
+                <h2>${data.Name} (${data.Symbol})</h2>
+                <div class="info-item">
+                    <div class="info-label">Industry</div>
+                    <div class="info-value">${data.Industry || 'N/A'}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Market Cap</div>
+                    <div class="info-value">$${formatMarketCap(data.MarketCapitalization)}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">P/E Ratio</div>
+                    <div class="info-value">${data.PERatio || 'N/A'}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Dividend Yield</div>
+                    <div class="info-value">${data.DividendYield ? data.DividendYield + '%' : 'N/A'}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Description</div>
+                    <div class="info-value" style="font-size: 0.875rem; line-height: 1.5;">
+                        ${data.Description || 'No description available.'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function formatMarketCap(value) {
+            if (!value) return 'N/A';
+            if (value >= 1e12) return (value / 1e12).toFixed(2) + 'T';
+            if (value >= 1e9) return (value / 1e9).toFixed(2) + 'B';
+            if (value >= 1e6) return (value / 1e6).toFixed(2) + 'M';
+            return value.toLocaleString();
+        }
+
+        // Load initial data
+        fetchData();
+    </script>
+</body>
+</html>

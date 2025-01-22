@@ -1,0 +1,104 @@
+# Kubectl Command Glossary
+
+## Cluster Management Commands
+
+### Cluster Information
+- `kubectl cluster-info` - Display cluster information including the master and service endpoints
+- `kubectl version` - Show the Kubernetes version running on both client and server
+- `kubectl api-resources` - List all supported API resources on the server
+
+### Context and Configuration
+- `kubectl config view` - Show merged kubeconfig settings
+- `kubectl config get-contexts` - List all available contexts
+- `kubectl config use-context [context-name]` - Switch to another context
+- `kubectl config set-context [context-name]` - Set a context entry in kubeconfig
+
+## Resource Management Commands
+
+### Creating Resources
+- `kubectl create [resource]` - Create a resource from a file or stdin
+- `kubectl apply -f [filename]` - Apply a configuration to a resource by file name or stdin
+- `kubectl run [name] --image=[image-name]` - Create and run a particular image in a pod
+
+### Viewing Resources
+- `kubectl get [resource]` - List one or more resources
+- `kubectl describe [resource] [name]` - Show detailed information about a resource
+- `kubectl logs [pod-name]` - Print the logs for a container in a pod
+- `kubectl exec [pod-name] -- [command]` - Execute a command in a container
+
+### Modifying Resources
+- `kubectl edit [resource] [name]` - Edit a resource on the server
+- `kubectl scale --replicas=[count] [resource] [name]` - Scale a resource
+- `kubectl rollout [subcommand]` - Manage rollouts of a resource
+- `kubectl label [resource] [name] [label]` - Add or update labels
+- `kubectl annotate [resource] [name] [annotation]` - Add or update annotations
+
+### Deleting Resources
+- `kubectl delete [resource] [name]` - Delete resources by file names, stdin, resources and names, or by resources and label selector
+- `kubectl delete -f [filename]` - Delete resources using file names
+- `kubectl delete [resource] --all` - Delete all resources of a specific type
+
+## Namespace Operations
+- `kubectl create namespace [name]` - Create a new namespace
+- `kubectl get namespaces` - List all namespaces
+- `kubectl config set-context --current --namespace=[namespace]` - Set the default namespace
+
+## Pod Operations
+- `kubectl get pods` - List all pods in the current namespace
+- `kubectl get pods --all-namespaces` - List all pods in all namespaces
+- `kubectl port-forward [pod-name] [local-port]:[pod-port]` - Forward one or more local ports to a pod
+- `kubectl attach [pod-name] -c [container-name]` - Attach to a running container
+
+## Service Operations
+- `kubectl expose [resource] [name] --port=[port] --target-port=[target-port]` - Expose a resource as a new Kubernetes service
+- `kubectl get services` - List all services
+- `kubectl describe service [name]` - Show details of a specific service
+
+## Deployment Operations
+- `kubectl create deployment [name] --image=[image-name]` - Create a deployment
+- `kubectl get deployments` - List all deployments
+- `kubectl rollout status deployment/[name]` - Check deployment rollout status
+- `kubectl rollout history deployment/[name]` - View deployment rollout history
+- `kubectl rollout undo deployment/[name]` - Rollback to previous deployment
+
+## ConfigMap and Secret Operations
+- `kubectl create configmap [name] --from-file=[path]` - Create a configmap from a file or directory
+- `kubectl create secret generic [name] --from-file=[path]` - Create a secret from a file or directory
+- `kubectl get configmaps` - List all configmaps
+- `kubectl get secrets` - List all secrets
+
+## Advanced Commands
+
+### Debug Commands
+- `kubectl debug [pod-name] -it --image=[debug-image]` - Create debugging container
+- `kubectl top [resource-type]` - Show resource usage (CPU/Memory)
+- `kubectl events` - View events in the cluster
+
+### Networking Commands
+- `kubectl proxy` - Start a proxy to the Kubernetes API server
+- `kubectl port-forward` - Forward ports of a pod to your local machine
+
+### Advanced Resource Management
+- `kubectl diff -f [filename]` - View the difference between the current state and the file
+- `kubectl patch [resource] [name] -p [patch]` - Update field(s) of a resource
+- `kubectl replace -f [filename]` - Replace a resource by filename or stdin
+
+## Common Options
+These options can be used with most kubectl commands:
+- `--namespace, -n` - Specify the namespace
+- `-o wide` - Output in plain-text format with additional information
+- `-o yaml` - Output in YAML format
+- `-o json` - Output in JSON format
+- `--all-namespaces, -A` - List resources across all namespaces
+- `--selector, -l` - Filter resources by label selector
+- `--field-selector` - Filter resources by field selector
+
+## Plugin Commands
+- `kubectl plugin list` - List all available kubectl plugins
+- `kubectl krew` - Package manager for kubectl plugins (if installed)
+
+## Notes:
+1. Square brackets [] indicate variable values that need to be replaced
+2. Many commands accept additional flags and options not listed here
+3. Use `kubectl [command] --help` for more detailed information about specific commands
+4. Some commands may require specific permissions or roles in the cluster

@@ -1,0 +1,12 @@
+windows:
+$env:ALPHA_VANTAGE_API_KEY="BBF7ACXDQL43OGJG"
+Bash:
+export ALPHA_VANTAGE_API_KEY="I2GKN8EQSA5HDKGJ"
+CMD:
+set ALPHA_VANTAGE_API_KEY=I2GKN8EQSA5HDKGJ
+
+export API_KEY="your_api_key_here"  # Linux/Mac
+set API_KEY=your_api_key_here       # Windows (Command Prompt)
+$env:API_KEY="your_api_key_here"    # Windows (PowerShell)
+ 
+ The API key is stored in the environment variable  ALPHA_VANTAGE_API_KEY .

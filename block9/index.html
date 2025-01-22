@@ -1,0 +1,256 @@
+# Directory Structure
+.
+├── app/
+│   ├── __init__.py
+│   ├── routes.py
+│   ├── models.py
+│   └── templates/
+│       ├── base.html
+│       ├── index.html
+│       └── plans.html
+├── static/
+│   ├── css/
+│   │   └── style.css
+│   └── js/
+│       └── main.js
+├── Dockerfile
+├── docker-compose.yml
+├── kubernetes/
+│   ├── deployment.yaml
+│   └── service.yaml
+└── requirements.txt
+
+# requirements.txt
+Flask==2.3.3
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.0.5
+python-dotenv==1.0.0
+gunicorn==21.2.0
+
+# app/__init__.py
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
+db = SQLAlchemy()
+migrate = Migrate()
+
+def create_app():
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'your-secret-key'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///phone_plans.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    db.init_app(app)
+    migrate.init_app(app, db)
+
+    from app.routes import main
+    app.register_blueprint(main)
+
+    return app
+
+# app/models.py
+from app import db
+
+class Plan(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    data = db.Column(db.String(50), nullable=False)
+    calls = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.Text)
+    features = db.Column(db.Text)
+
+# app/routes.py
+from flask import Blueprint, render_template
+from app.models import Plan
+
+main = Blueprint('main', __name__)
+
+@main.route('/')
+def index():
+    plans = Plan.query.all()
+    return render_template('index.html', plans=plans)
+
+# app/templates/base.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Plans - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="text-xl font-bold">Phone Plans</div>
+                <div class="space-x-4">
+                    <a href="/" class="hover:text-gray-200">Home</a>
+                    <a href="/plans" class="hover:text-gray-200">Plans</a>
+                    <a href="/support" class="hover:text-gray-200">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-6 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <p>Email: support@phoneplans.com</p>
+                    <p>Phone: 0800 123 456</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-gray-300">About Us</a></li>
+                        <li><a href="#" class="hover:text-gray-300">Terms & Conditions</a></li>
+                        <li><a href="#" class="hover:text-gray-300">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="hover:text-gray-300">Facebook</a>
+                        <a href="#" class="hover:text-gray-300">Twitter</a>
+                        <a href="#" class="hover:text-gray-300">Instagram</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
+
+# app/templates/index.html
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="text-center mb-12">
+    <h1 class="text-4xl font-bold text-gray-800 mb-4">Choose Your Perfect Phone Plan</h1>
+    <p class="text-xl text-gray-600">Find the right mobile plan for your needs</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    {% for plan in plans %}
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">{{ plan.name }}</h2>
+            <div class="text-3xl font-bold text-blue-600 mb-4">
+                CHF {{ "%.2f"|format(plan.price) }}<span class="text-base font-normal">/month</span>
+            </div>
+            <ul class="space-y-3 mb-6">
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    {{ plan.data }} Data
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    {{ plan.calls }}
+                </li>
+            </ul>
+            <button class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
+                Choose Plan
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+# static/css/style.css
+/* Additional custom styles */
+.plan-card:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+}
+
+# static/js/main.js
+document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+});
+
+# Dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+ENV FLASK_APP=app
+ENV FLASK_ENV=production
+
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:create_app()"]
+
+# kubernetes/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phone-plans
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: phone-plans
+  template:
+    metadata:
+      labels:
+        app: phone-plans
+    spec:
+      containers:
+      - name: phone-plans
+        image: phone-plans:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: FLASK_APP
+          value: "app"
+        - name: FLASK_ENV
+          value: "production"
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+
+# kubernetes/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: phone-plans-service
+spec:
+  selector:
+    app: phone-plans
+  ports:
+  - port: 80
+    targetPort: 5000
+  type: LoadBalancer
